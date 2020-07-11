@@ -26,8 +26,8 @@
           :on-success="handleRemoveImgSuccess"
         >
        <span v-if="clearAddButton(!imgFlag)">
-         <i v-if="listType==='picture-card'" ref="upLoadAdd" @click="imgUpload"  class="el-icon-plus"></i>
-           <el-button v-else-if="listType==='text'" @click="imgUpload" size="small" type="primary">点 击 上 传</el-button>
+         <i v-if="listType=='picture-card'" ref="upLoadAdd" @click="imgUpload"  class="el-icon-plus"></i>
+           <el-button v-else-if="listType=='text'" @click="imgUpload" size="small" type="primary">点 击 上 传</el-button>
          <el-button v-else size="small" @click="imgUpload" type="primary">点 击 上 传</el-button>
        </span>
           <div slot="file" slot-scope="{file}">
@@ -75,17 +75,57 @@ export default {
     };
   },
   props: {
+    accept: {//是否需要规定上传类型，默认图片类型
+      type: String,
+      default: () => ".jpg, .png, .gif, .jpeg"
+    },
+   Hppt: {//上传的端口，本地环境，测试环境，上线环境
+      type: String,
+      default: () => ""
+    },
+    port: {//上传图片的地址,必传
+      type: String,
+      default: () => ""
+    },
+    Size: {//是否需要规定上传图片的大小
+      type: Number | Boolean,
+      default: () => false
+    },
+    needRequired: {//是否需要校验
+      type: Boolean,
+      default: () => true
+    },
+    errorMessage: {//校验规则的提示内容
+      type: String,
+      default: () => "请上传图片文件"
+    },
     fileList: {//上传图片的一个数组，必传
       type: Array,
       default: ()=>[]
+    },
+    Proportion: {//尺寸大小，长宽比例
+      type: Boolean | Array,
+      default: () => false
     },
     listType:{//上传文件类型
       type:String,
       default:()=>'picture-card'
     },
+    showFileList: {//是否显示已上传文件列表
+      type: Boolean,
+      default: () => true
+    },
+    fromKey: {//上传成功后，将要修改的字段
+      type: String | Array,
+      default: () => ""
+    },
     limit: {//上传图片的个数，必传
       type: Number,
       default: () => 1
+    },
+    showClearAllBtn: {//是否显示一键清除按钮
+      type: Boolean,
+      default: () => true
     },
     needMultiple: {//是否需要多选
       type: Boolean,
@@ -95,25 +135,13 @@ export default {
       type: Boolean,
       default: () => false
     },
-    showFileList: {//是否显示已上传文件列表
-      type: Boolean,
-      default: () => true
-    },
     computationRule: {//上传图片尺寸大小的校验规则
       type: String,
       default: () => "==="
     },
-    accept: {//是否需要规定上传类型，默认图片类型
-      type: String,
-      default: () => ".jpg, .png, .gif, .jpeg,.xlsx"
-    },
     label: {//上传图片的左侧内容
       type: String,
       default: () => ""
-    },
-    port: {//上传图片的地址,必传
-      type: String,
-      default: () => "/ydb/admin/manage/file/upload.json"
     },
     className: {//class，个人感觉没啥用
       type: String,
@@ -123,46 +151,15 @@ export default {
       type: String,
       default: () => "margin-top:10px"
     },
-    Size: {//是否需要规定上传图片的大小
-      type: Number | Boolean,
-      default: () => false
-    },
     putSuccessShowAddBtn: {//上传成功是否还需展示上传按钮
       type:Boolean,
       default: () => false
     },
-    showClearAllBtn: {//是否显示一键清除按钮
-      type: Boolean,
-      default: () => true
-    },
+
     visible: {//可传可不穿，建议传，因为当你回显的时候回有个图片清空的垃圾效果
       type: Boolean,
       default: () => false
     },
-    needRequired: {//是否需要校验
-      type: Boolean,
-      default: () => true
-    },
-    Proportion: {//尺寸大小，长宽比例
-      type: Boolean | Array,
-      default: () => false
-    },
-    Hppt: {//上传的端口，本地环境，测试环境，上线环境
-      type: String,
-      default: () => ""
-    },
-    errorMessage: {//校验规则的提示内容
-      type: String,
-      default: () => "请上传图片文件"
-    },
-    fromKey: {//上传成功后，将要修改的字段
-      type: String | Array,
-      default: () => ""
-    },
-    needClipping:{//上传中是否需要大小剪辑
-      type:Boolean,
-      default:()=>false
-    }
   },
   watch: {
     visible:{
@@ -177,6 +174,8 @@ export default {
   },
   methods: {
     clearAddButton(flag){//清除上传文件按钮
+        this.imgFlag= this.fileList.length === 0 ? false : true
+       this.ModifiedReveal(!flag)
      return setTimeout(() => {
         return flag
       }, 1000);
