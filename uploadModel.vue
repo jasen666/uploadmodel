@@ -43,7 +43,7 @@
           </div>
         </el-upload>
         <div v-if="listType=='text'&&showFileList">
-          <h3 style="text-indent:5.5em">文件列表：</h3>
+          <h3 style="">文件列表：</h3>
           <span class="fileList_jasen" v-if="fileList.length===0">暂无上传文件</span>
           <p class="fileList_jasen" v-for="(item,index) in fileList" :key="index"><span>{{item.name}}</span>
                 <span class="deleteIcon_jasen"><i  @click="handleRemove(item)" class="el-icon-delete"></i></span>
@@ -77,7 +77,7 @@ export default {
   props: {
     accept: {//是否需要规定上传类型，默认图片类型
       type: String,
-      default: () => ".jpg, .png, .gif, .jpeg"
+      default: () => ".jpg, .png, .gif, .jpeg,.xlsx"
     },
    Hppt: {//上传的端口，本地环境，测试环境，上线环境
       type: String,
@@ -85,7 +85,7 @@ export default {
     },
     port: {//上传图片的地址,必传
       type: String,
-      default: () => ""
+      default: () => "/ydb/admin/manage/file/upload.json"
     },
     Size: {//是否需要规定上传图片的大小
       type: Number | Boolean,
@@ -174,10 +174,10 @@ export default {
   },
   methods: {
     clearAddButton(flag){//清除上传文件按钮
-        this.imgFlag= this.fileList.length === 0 ? false : true
+       this.imgFlag = this.fileList.length < this.limit ? false : true;
        this.ModifiedReveal(!flag)
      return setTimeout(() => {
-        return flag
+        return this.imgFlag
       }, 1000);
     },
     handleExceed(file,fileList){
@@ -387,7 +387,7 @@ export default {
   }
 }
 .fileList_jasen{
-  text-indent: 5.5em;
+  // text-indent: 5.5em;
   height: 40px;
   line-height: 39px;
   display: flex;
